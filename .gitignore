@@ -1,0 +1,11 @@
+target/
+*.class
+*.jar
+.idea/
+*.iml
+out/
+allure-results/
+allure-report/
+screenshots/
+.DS_Store
+Thumbs.db
