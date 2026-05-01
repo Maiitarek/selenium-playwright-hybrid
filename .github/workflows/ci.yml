@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  selenium:
+    name: Selenium Chrome (headless)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {java-version: '11', distribution: 'temurin', cache: maven}
+      - uses: browser-actions/setup-chrome@v1
+      - run: mvn clean test -Drunner=selenium-chrome -Dheadless=true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: allure-selenium, path: target/allure-results/, retention-days: 7}
+
+  playwright:
+    name: Playwright Chromium (headless)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {java-version: '11', distribution: 'temurin', cache: maven}
+      - name: Install Playwright browsers
+        run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps chromium"
+      - run: mvn clean test -Drunner=playwright-chromium -Dheadless=true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: allure-playwright, path: target/allure-results/, retention-days: 7}
